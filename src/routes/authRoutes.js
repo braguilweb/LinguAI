@@ -8,5 +8,11 @@ router.post('/register', userController.registrarUsuario);
 //Rota para login de usuário
 router.post('/login', userController.logarUsuario);
 
+//Rota para adicionar preferencia
+router.post('/usuarios/:usuarioId/preferencias', userController.adicionarPreferencias);
+
+//Rota para deletar preferencia
+router.delete('/usuarios/:usuarioId/preferencias/:preferenciaId', userController.removerPreferencia);
+
 module.exports = router
 
