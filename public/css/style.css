@@ -1,0 +1,108 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #d2dbdc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .whatsapp-container {
+    background-color: #ededed;
+    width: 400px;
+    max-width: 90%;
+    height: 600px;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .header {
+    background-color: #075e54;
+    color: white;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .footer {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.8em;
+  }
+  
+  /* Estilos das telas de Login e Cadastro */
+  .login-screen, 
+  .signup-screen {
+    text-align: center; /* Centraliza o conteúdo horizontalmente */
+  }
+  
+  .logo {
+    width: 100px; /* Ajuste o tamanho da logo conforme necessário */
+    margin: 20px auto; /* Centraliza a logo horizontalmente e adiciona margem superior/inferior */
+    display: block; /* Para que a margem automática funcione */
+  }
+  
+  .input-group {
+    margin-bottom: 15px; /* Espaçamento entre os campos de entrada */
+  }
+  
+  label {
+    display: block; /* Para que o label fique acima do input */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333; /* Cor do texto dos labels */
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: calc(100% - 20px); /* Ocupa a largura total, menos o padding */
+    padding: 10px;
+    border: 1px solid #ccc; /* Borda suave */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-sizing: border-box; /* Inclui o padding e a borda na largura total */
+    font-size: 16px; 
+  }
+  
+  button[type="submit"] {
+    background-color: #075e54; /* Verde do WhatsApp */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px; 
+    transition: background-color 0.3s ease; /* Efeito de transição suave */
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #054c44; /* Cor mais escura ao passar o mouse */
+  }
+  
+  .signup-link,
+  .login-link {
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+  
+  .signup-link a,
+  .login-link a {
+    color: #075e54; /* Verde do WhatsApp */
+    text-decoration: none; 
+  }
