@@ -77,7 +77,7 @@ const logarUsuario = async (req, res) => {
 
 //Rota para adicionar preferencias a um usuario
 const adicionarPreferencias = async (req, res) => {
-    console.log(req.usuario) //RETIRAR DEPOIS
+    //console.log(req.usuario) 
     try {
       const usuarioId = req.usuario.id; // Obter o ID do usuário autenticado (próxima etapa: vamos implementar a autenticação JWT)
       const preferenciasIds = req.body.preferenciasIds; // Array de IDs de preferências

@@ -1,13 +1,16 @@
 require('dotenv').config();
+const cors = require('cors')
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const helmet = require ('helmet');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 const authRoutes = require('./src/routes/authRoutes.js'); 
 const userRoutes = require('./src/routes/userRoutes.js');
 
 //ROTAS AQUI
+
+app.use(cors({ origin: 'http://127.0.0.1:5500' }));
 
 app.use(express.json());
 
