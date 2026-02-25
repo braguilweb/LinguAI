@@ -4,6 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const helmet = require ('helmet');
 const app = express();
+const path = require('path');
 const port = process.env.PORT || 8000;
 const authRoutes = require('./src/routes/authRoutes.js'); 
 const userRoutes = require('./src/routes/userRoutes.js');
@@ -11,7 +12,7 @@ const chatRoutes = require('./src/routes/chatRoutes.js');
 
 //ROTAS AQUI
 
-app.use(cors({ origin: 'http://127.0.0.1:5500' }));
+app.use(cors({ origin: ['http://127.0.0.1:5500','https://linguai-backend-wkpv.onrender.com']}));
 
 app.use(express.json());
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use(helmet()); // Ativa todos os middlewares do Helmet (incluindo CSRF)
 // OU, para ativar apenas o CSRF:
 // app.use(helmet.csrf());
+app.use(express.static(path.join(__dirname, 'public'))); // Servir arquivos estáticos da pasta 'public'
 
 app.use('/usuarios',userRoutes); // Use o roteador para rotas que começam com '/usuarios'
 
