@@ -1,142 +1,162 @@
+
 const usuarioService = require('../services/usuarioService');
 const jwt = require('jsonwebtoken');
 
+// Chave secreta para assinar e verificar tokens JWT, obtida das variáveis de ambiente.
 const SECRET_KEY = process.env.JWT_SECRET;
 
+/**
+ * @function registrarUsuario
+ * @description Controla o registro de novos usuários.
+ * @param {Object} req - Objeto de requisição do Express.
+ * @param {Object} res - Objeto de resposta do Express.
+ */
 const registrarUsuario = async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
-        const fotoPerfil = req.body.fotoPerfil || 'https://avatars.githubusercontent.com/u/80931364?v=4'
+        // Define uma foto de perfil padrão se nenhuma for fornecida.
+        const fotoPerfil = req.body.fotoPerfil || 'https://avatars.githubusercontent.com/u/80931364?v=4';
 
-        //validações
+        // TODO: Adicionar validações mais robustas para nome, email e senha.
 
         const resultado = await usuarioService.criarUsuario(nome, email, senha, fotoPerfil);
         if (resultado.erro) {
-            return res.status(400).json({erro: resultado.erro});
+            // Retorna erro 400 se o serviço indicar um problema (ex: email já cadastrado).
+            return res.status(400).json({ erro: resultado.erro });
         }
-        res.status(201).json({mensagem: 'Usuário cadastrado com sucesso!', usuario: resultado.usuario });
-
+        // Retorna sucesso 201 com a mensagem e os dados do usuário criado.
+        res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso!', usuario: resultado.usuario });
 
     } catch (erro) {
-        console.error(erro);
-        res.status(500).json({erro: 'Erro no servidor ao cadastrar usuário'});
+        console.error('Erro ao registrar usuário:', erro);
+        // Retorna erro 500 para problemas internos do servidor.
+        res.status(500).json({ erro: 'Erro interno do servidor ao cadastrar usuário. Por favor, tente novamente mais tarde.' });
     }
-    // Lógica para registrar um novo usuário
-    // 1. Obter os dados do usuário da requisição (req.body)
-    // 2. Validar os dados (email válido, senha forte, etc.)
-    // 3. Chamar o service para salvar o usuário no banco de dados
-    // 4. Retornar uma resposta (sucesso ou erro)
-}
+};
 
+/**
+ * @function logarUsuario
+ * @description Controla o processo de login de usuários e geração de token JWT.
+ * @param {Object} req - Objeto de requisição do Express.
+ * @param {Object} res - Objeto de resposta do Express.
+ */
 const logarUsuario = async (req, res) => {
     try {
-        const { email, senha} = req.body;
+        const { email, senha } = req.body;
 
-        // validações
+        // TODO: Adicionar validações para email e senha.
 
         const resultado = await usuarioService.autenticarUsuario(email, senha);
-        
 
         if (resultado.usuario) {
-            //Gerar tokem JWT
-            const token = jwt.sign({usuarioId: resultado.usuario.id}, SECRET_KEY, {expiresIn: '1h'})
+            // Gera um token JWT com o ID do usuário e expiração de 1 hora.
+            const token = jwt.sign({ usuarioId: resultado.usuario.id }, SECRET_KEY, { expiresIn: '1h' });
 
-            //Definir o cookie HttpOnly e Secure
+            // Define o cookie HttpOnly e Secure para o token JWT.
             res.cookie('token', token, {
-                httpOnly: true, //Impede o acesso ao cookie via JavaScript
-                secure: process.env.NODE_ENV === 'production', //Define como true apenas em produção (HTTPS)
-                maxAge: 3600000 // Tempo de expiração do cookie em milissegundos (1hora)
+                httpOnly: true, // Impede o acesso ao cookie via JavaScript, aumentando a segurança.
+                secure: process.env.NODE_ENV === 'production', // Apenas envia o cookie em HTTPS em produção.
+                maxAge: 3600000 // Tempo de expiração do cookie em milissegundos (1 hora).
             });
 
-
+            // Retorna mensagem de sucesso, dados do usuário e o token (para uso no frontend, se necessário).
             res.json({
                 mensagem: 'Login realizado com sucesso!',
                 usuario: resultado.usuario,
-                token: token
+                token: token // O token é enviado no corpo da resposta para facilitar o uso no frontend, mas o cookie é a forma principal de autenticação.
             });
 
-        }else{
-            return res.status(401).json({erro: resultado.erro})
+        } else {
+            // Retorna erro 401 se a autenticação falhar (credenciais inválidas).
+            return res.status(401).json({ erro: resultado.erro });
         }
 
-        
-
-        
     } catch (erro) {
-        console.error(erro);
-        res.status(500).json({erro:'Erro no sevidor ao realizar o login.'});
+        console.error('Erro ao logar usuário:', erro);
+        // Retorna erro 500 para problemas internos do servidor.
+        res.status(500).json({ erro: 'Erro interno do servidor ao realizar o login. Por favor, tente novamente mais tarde.' });
     }
-
-    // Lógica para autenticar um usuário
-    // 1. Obter email e senha da requisição
-    // 2. Validar os dados
-    // 3. Chamar o service para verificar se o usuário existe e a senha está correta
-    // 4. Se válido, gerar um token JWT
-    // 5. Retornar o token ou erro de autenticação 
 };
 
-//Rota para adicionar preferencias a um usuario
+/**
+ * @function adicionarPreferencias
+ * @description Adiciona preferências a um usuário autenticado.
+ * @param {Object} req - Objeto de requisição do Express (espera req.usuario.id do middleware de autenticação).
+ * @param {Object} res - Objeto de resposta do Express.
+ */
 const adicionarPreferencias = async (req, res) => {
-    //console.log(req.usuario) 
     try {
-      const usuarioId = req.usuario.id; // Obter o ID do usuário autenticado (próxima etapa: vamos implementar a autenticação JWT)
-      const preferenciasIds = req.body.preferenciasIds; // Array de IDs de preferências
-  
-      if (!preferenciasIds || !Array.isArray(preferenciasIds) || preferenciasIds.length === 0) {
-        return res.status(400).json({ erro: 'Forneça um array de IDs de preferências válido.' });
-      }
+        // O ID do usuário é obtido do token JWT decodificado pelo middleware de autenticação.
+        const usuarioId = req.usuario.id;
+        const { preferenciasIds } = req.body; // Array de IDs de preferências a serem adicionadas.
 
-      const resultado = await usuarioService.adicionarPreferenciasAoUsuario(usuarioId, preferenciasIds);
+        if (!preferenciasIds || !Array.isArray(preferenciasIds) || preferenciasIds.length === 0) {
+            return res.status(400).json({ erro: 'É necessário fornecer um array de IDs de preferências válido.' });
+        }
 
-      //verifica se houve erro no service
-      if (resultado.erro) {
-        return res.status(400).json({
-          erro: resultado.erro,
-          preferenciasInvalidas: resultado.preferenciasInvalidas,
-          preferenciasAdicionadas: resultado.preferenciasAdicionadas
-        })
-      }
+        const resultado = await usuarioService.adicionarPreferenciasAoUsuario(usuarioId, preferenciasIds);
 
-  
-      
-      res.json({ mensagem: resultado.mensagem });
+        if (resultado.erro) {
+            // Retorna erro 400 se o serviço indicar um problema (ex: preferência inválida).
+            return res.status(400).json({
+                erro: resultado.erro,
+                preferenciasInvalidas: resultado.preferenciasInvalidas,
+                preferenciasAdicionadas: resultado.preferenciasAdicionadas
+            });
+        }
+
+        // Retorna sucesso com a mensagem.
+        res.json({ mensagem: resultado.mensagem });
     } catch (error) {
-      console.error('Erro ao adicionar preferências:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor.' });
+        console.error('Erro ao adicionar preferências:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao adicionar preferências. Por favor, tente novamente mais tarde.' });
     }
-  };
+};
 
-  // Rota para remover uma preferência de um usuário
+/**
+ * @function removerPreferencia
+ * @description Remove uma preferência de um usuário autenticado.
+ * @param {Object} req - Objeto de requisição do Express (espera req.usuario.id do middleware de autenticação).
+ * @param {Object} res - Objeto de resposta do Express.
+ */
 const removerPreferencia = async (req, res) => {
     try {
-      const usuarioId = req.usuario.id; // Obter o ID do usuário autenticado 
-      const preferenciaId = req.params.preferenciaId; 
-  
-      if (!preferenciaId) {
-        return res.status(400).json({ erro: 'Forneça o ID da preferência.' });
-      }
-  
-      await usuarioService.removerPreferenciaDoUsuario(usuarioId, preferenciaId);
-      res.json({ mensagem: 'Preferência removida com sucesso!' });
+        // O ID do usuário é obtido do token JWT decodificado pelo middleware de autenticação.
+        const usuarioId = req.usuario.id;
+        const { preferenciaId } = req.params; // ID da preferência a ser removida, vindo dos parâmetros da URL.
+
+        if (!preferenciaId) {
+            return res.status(400).json({ erro: 'É necessário fornecer o ID da preferência a ser removida.' });
+        }
+
+        await usuarioService.removerPreferenciaDoUsuario(usuarioId, preferenciaId);
+        // Retorna sucesso com a mensagem.
+        res.json({ mensagem: 'Preferência removida com sucesso!' });
     } catch (error) {
-      console.error('Erro ao remover preferência:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor.' });
+        console.error('Erro ao remover preferência:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao remover preferência. Por favor, tente novamente mais tarde.' });
     }
-  };
+};
 
-
-  // Rota para obter preferencias do usuário
-  const obterPreferenciasDoUsuario = async (req, res) => {
+/**
+ * @function obterPreferenciasDoUsuario
+ * @description Obtém todas as preferências de um usuário autenticado.
+ * @param {Object} req - Objeto de requisição do Express (espera req.usuario.id do middleware de autenticação).
+ * @param {Object} res - Objeto de resposta do Express.
+ */
+const obterPreferenciasDoUsuario = async (req, res) => {
     try {
-      const usuarioId = req.usuario.id; // Obter o ID do usuário do token JWT
-  
-      const preferencias = await usuarioService.obterPreferenciasDoUsuario(usuarioId);
-      res.json(preferencias); 
+        // O ID do usuário é obtido do token JWT decodificado pelo middleware de autenticação.
+        const usuarioId = req.usuario.id;
+
+        const preferencias = await usuarioService.obterPreferenciasDoUsuario(usuarioId);
+        // Retorna as preferências encontradas.
+        res.json(preferencias);
     } catch (error) {
-      console.error('Erro ao obter preferências do usuário:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor.' });
+        console.error('Erro ao obter preferências do usuário:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao obter preferências. Por favor, tente novamente mais tarde.' });
     }
-  }
+};
 
 module.exports = {
     registrarUsuario,
@@ -144,4 +164,4 @@ module.exports = {
     adicionarPreferencias,
     removerPreferencia,
     obterPreferenciasDoUsuario
-}
+};

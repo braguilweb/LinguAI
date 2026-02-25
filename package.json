@@ -1,16 +1,26 @@
+
 {
   "name": "linguai",
   "version": "1.0.0",
-  "description": "",
+  "description": "LinguAI - Aplicação de prática de idiomas com inteligência artificial usando Google Gemini",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "linguagem",
+    "idiomas",
+    "inteligência artificial",
+    "gemini",
+    "chat",
+    "educação"
+  ],
+  "author": "LinguAI Team",
   "license": "ISC",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/generative-ai": "^0.3.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -19,5 +29,8 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
