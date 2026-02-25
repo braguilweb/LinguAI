@@ -1,4 +1,5 @@
 import { exibirTelaCadastro } from "./cadastro.js";
+import { ChatManager } from "../chat.js";
 
 export function exibirTelaLogin() {
     // ... (HTML da tela de Login)
@@ -67,8 +68,8 @@ export function exibirTelaLogin() {
   
           alert(data.mensagem); // Exibir a mensagem de sucesso da API
   
-          // 2. Redirecionar para a tela principal da aplicação (vamos implementá-la em breve)
-          // window.location.href = '/home'; // Exemplo de redirecionamento
+          // 2. Redirecionar para a tela de seleção de idioma
+          location.reload();
         } else {
           // Erro no login
           alert(data.erro); // Exibir a mensagem de erro da API

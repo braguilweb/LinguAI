@@ -7,6 +7,7 @@ const app = express();
 const port = process.env.PORT || 8000;
 const authRoutes = require('./src/routes/authRoutes.js'); 
 const userRoutes = require('./src/routes/userRoutes.js');
+const chatRoutes = require('./src/routes/chatRoutes.js');
 
 //ROTAS AQUI
 
@@ -28,6 +29,7 @@ app.use('/usuarios',userRoutes); // Use o roteador para rotas que começam com '
 
 
 app.use('/auth', authRoutes);
+app.use('/chat', chatRoutes);
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`)
