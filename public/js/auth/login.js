@@ -1,6 +1,5 @@
 
 import { exibirTelaCadastro } from "./cadastro.js";
-import { ChatManager } from "../chat.js";
 
 /**
  * @function exibirTelaLogin
@@ -66,12 +65,10 @@ export function exibirTelaLogin() {
 
             if (response.ok) {
                 // Login bem-sucedido!
-                // 1. Armazena o token JWT em um cookie (o servidor também o envia no cookie HttpOnly).
-                document.cookie = `token=${data.token}; path=/;`;
-
+                // Armazena o token no localStorage para controle de sessão no frontend.
+                localStorage.setItem('token', data.token);
                 alert(data.mensagem); // Exibe a mensagem de sucesso da API.
-
-                // 2. Redireciona para a tela de seleção de idioma.
+                // Redireciona para a tela de seleção de idioma.
                 location.reload();
             } else {
                 // Erro no login.
