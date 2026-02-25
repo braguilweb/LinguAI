@@ -72,7 +72,7 @@ class ChatManager {
    */
   async iniciarChat(idioma) {
     try {
-      const response = await fetch("http://localhost:8000/chat/iniciar", {
+      const response = await fetch("/chat/iniciar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,7 @@ class ChatManager {
       }
 
       // Enviar a mensagem para a API
-      const response = await fetch(`http://localhost:8000/chat/${this.chatId}/mensagem`, {
+      const response = await fetch(`/chat/${this.chatId}/mensagem`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

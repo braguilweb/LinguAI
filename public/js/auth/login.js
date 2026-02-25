@@ -51,7 +51,7 @@ export function exibirTelaLogin() {
         } 
         
   
-        const response = await fetch('http://localhost:8000/auth/login', { // Ajuste a URL da sua API
+        const response = await fetch('/auth/login', { // Ajuste a URL da sua API
           method: 'POST',
           headers: {
             'Content-Type':'application/json'
